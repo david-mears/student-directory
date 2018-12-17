@@ -38,8 +38,23 @@ def print_header
   puts ("-" * firstline.length).center(100)
 end
 def print(students)
-  $students.each.with_index do |student, i|
-    puts "#{i+1}. #{student[:name].capitalize} (#{student[:cohort].capitalize})"
+  # Get an array of the cohorts
+  cohorts = []
+  $students.each do |student|
+    if !cohorts.include? student[:cohort]
+      cohorts.push(student[:cohort])
+    end
+  end
+  
+  number = 0
+  
+  cohorts.each do |cohort|
+    $students.each do |student|
+      if student[:cohort] == cohort
+        number += 1
+        puts "#{number}. #{student[:name].capitalize} (#{student[:cohort].capitalize})"
+      end
+    end
   end
 end
 def print_footer(names)
