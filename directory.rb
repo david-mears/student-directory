@@ -16,13 +16,24 @@ def save_students
   end
   file.close
 end
+def try_load_students
+  filename = ARGV.first
+  return if filename.nil?
+  if File.exists?(filename)
+    load_students(filename)
+    puts "Loaded #{$students.count} students from #{filename}"
+  else
+    puts "Sorry, #{filename} doesn't exist."
+    exit
+  end
+end
 def input_students
   puts "Please enter the names of the students, followed optionally by their cohort date in curved parentheses. (If no parentheses, default cohort is November.)"
   puts "To finish, return an empty input (with newline)."
   # create an empty array
   $students = []
   # get the first name
-  input = gets.chomp
+  input = STDIN.gets.chomp
   # while the name is not empty, repeat this code
   while !input.empty? do
     # add the student hash to the array
@@ -38,7 +49,7 @@ def input_students
     end
     puts "Now we have #{$students.count} student#{plural}"
     # get another name from the user
-    input = gets.chomp
+    input = STDIN.gets.chomp
   end
   # return the array of students
   $students
@@ -71,17 +82,17 @@ def show_students
   print_students_list
   print_footer($students)
 end
-def load_students
-  file = File.open("students.csv", "r")
+def load_students(filename = "students.csv")
+  file = File.open(filename, "r")
   file.readlines.each do |line|
-    name, cohort = line.split(',')
+    name, cohort = line.chomp.split(',')
     cohort.chomp!
-    $students << {name: name.to_sym, cohort: cohort.to_sym}
+    $students << {name: name, cohort: cohort.to_sym}
   end
   file.close
 end
 def process
-  selection = gets.chomp
+  selection = STDIN.gets.chomp
   case selection
     when "1"
       $students = input_students
@@ -94,7 +105,7 @@ def process
     when "3"
       save_students
     when "4"
-      load_students
+      try_load_students
     when "9"
       exit
     else
@@ -103,6 +114,7 @@ def process
 end
 def interactive_menu
   $students = []
+  try_load_students
   loop do
     print_menu
     process
