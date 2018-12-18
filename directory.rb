@@ -6,19 +6,21 @@ def plural
   end
 end
 def save_students
-  # open the file for writing
-  file = File.open("students.csv", "w")
-  # iterate over the array of students
+  puts "Where do you want to save to? Type filename or leave blank for default (students.csv)."
+  filename = gets.chomp
+  filename = "students.csv" if filename.nil?
+  file = File.open(filename, "w")
   $students.each do |student|
     student_data = [student[:name], student[:cohort]]
     csv_line = student_data.join(",")
     file.puts csv_line
   end
   file.close
+  puts "Saved to #{filename}."
 end
 def try_load_students
   filename = ARGV.first
-  return if filename.nil?
+  filename = "students.csv" if filename.nil?
   if File.exists?(filename)
     load_students(filename)
     puts "Loaded #{$students.count} students from #{filename}"
@@ -73,9 +75,9 @@ def print_menu
   puts "*** MENU:"
   puts "1. Input the students"
   puts "2. Show the students"
-  puts "3. Save the list to students.csv"
+  puts "3. Save the current list"
   puts "4. Load the students saved before"
-  puts "9. Exit" # 9 because we'll be adding more items  
+  puts "9. Exit"
 end
 def show_students
   print_header
@@ -84,12 +86,15 @@ def show_students
 end
 def load_students(filename = "students.csv")
   file = File.open(filename, "r")
+  counter = 0
   file.readlines.each do |line|
+    counter += 1
     name, cohort = line.chomp.split(',')
     cohort.chomp!
     $students << {name: name, cohort: cohort.to_sym}
   end
   file.close
+  puts "Loaded #{counter} more students from #{filename}."
 end
 def process
   selection = STDIN.gets.chomp
