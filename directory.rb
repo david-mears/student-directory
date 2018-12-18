@@ -20,7 +20,11 @@ def save_students
 end
 def try_load_students
   filename = ARGV.first
-  filename = "students.csv" if filename.nil?
+  if filename.nil?
+    puts "Load from which filename? (Leave blank for default, students.csv.)"
+    filename = gets.chomp
+    filename = "students.csv" if filename == ""
+  end
   if File.exists?(filename)
     load_students(filename)
     puts "Loaded #{$students.count} students from #{filename}"
@@ -94,7 +98,6 @@ def load_students(filename = "students.csv")
     $students << {name: name, cohort: cohort.to_sym}
   end
   file.close
-  puts "Loaded #{counter} more students from #{filename}."
 end
 def process
   selection = STDIN.gets.chomp
